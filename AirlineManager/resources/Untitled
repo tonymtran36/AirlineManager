@@ -1,0 +1,13 @@
+Adding a new flight.
+> IAD WashDc - CDG Paris
+> Passenger 350 cap
+> 10am et
+> 5pm et
+1
+
+> airportDao.save(IAD)
+> airportDao.save(CDG)
+> airplaneDao.save
+> flightDAO.save()
+
+4db connections
