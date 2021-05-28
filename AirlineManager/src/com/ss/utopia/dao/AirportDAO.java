@@ -20,8 +20,8 @@ public class AirportDAO extends BaseDAO<Airport>{
 	}
 
 	public void updateAirport(Airport airport) throws ClassNotFoundException, SQLException {
-		save("UPDATE airport set = ?, city = ?",
-				new Object[] {airport.getAirportCode(), airport.getCity()});
+		save("UPDATE airport set city = ? where iata_id = ?",
+				new Object[] {airport.getCity(), airport.getAirportCode()});
 	}
 	
 	public void deleteAirport(Airport airport) throws ClassNotFoundException, SQLException {

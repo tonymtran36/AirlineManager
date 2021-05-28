@@ -68,11 +68,11 @@ public class Traveler {
 			printFlights(flights);
 			System.out.println((flights.size() + 1) + " Quit");
 			int flightChoice = scan.nextInt();
-			Flight flight = flights.get(flightChoice);
 			if (flightChoice > 0 && flightChoice <= flights.size() ) {
+				Flight flight = flights.get(flightChoice);
 				viewSeatingOptions(scan, flight, userRole);
 			}
-			else return;
+			else validateTicket(scan);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
@@ -108,7 +108,7 @@ public class Traveler {
 					e.printStackTrace();
 				}
 			case 5:
-				return;
+				validateTicket(scan);
 			}
 		}
 	
@@ -134,7 +134,7 @@ public class Traveler {
 			if (flightChoice > 0 && flightChoice <= flights.size() ) {
 				viewCancelOptions(scan, flight, userRole);
 			}
-			else return;
+			else validateTicket(scan);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
@@ -171,7 +171,7 @@ public class Traveler {
 					e.printStackTrace();
 				}
 			case 5:
-				return;
+				validateTicket(scan);
 			}
 		}
 	
@@ -191,7 +191,8 @@ public class Traveler {
 			flightBookings.setBookingId(booking);
 			
 			flightBookingsDao.deletesFlightBookings(flightBookings);
-			conn.commit(); //this makes change permanent
+			conn.commit(); //this makes change permanent			
+			System.out.println("Deleted Ticket Successfully!");
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			conn.rollback();
@@ -213,11 +214,13 @@ public class Traveler {
 			booking.setBooking(userRole.getRoleId());
 			FlightBookings flightBookings = new FlightBookings();
 			
-			flightBookings.setFlights(flight.getFlightId());
+			flightBookings.setFlights(flight);
 			flightBookings.setBookingId(booking);
 			
+
 			flightBookingsDao.addFlightBookings(flightBookings);
 			conn.commit(); //this makes change permanent
+			System.out.println("Added Ticket Successfully!");
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			conn.rollback();

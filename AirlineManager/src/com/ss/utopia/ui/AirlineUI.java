@@ -42,18 +42,15 @@ public class AirlineUI {
 				case (1):
 					//Employee
 					airlineUI.employee(scan);
-					System.out.println("Employee");
 					break;
 				case (2):
 					//Admin
 					airlineUI.admin(scan);
-					System.out.println("Admin");
 					break;
 
 				case (3):
 					//Traveler
 					airlineUI.traveler(scan);
-					System.out.println("Traveler");
 					break;
 
 				default:

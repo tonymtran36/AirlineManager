@@ -93,7 +93,13 @@ public class Agent {
 		int option;
 		if (scan.hasNextInt()) {
 			option = scan.nextInt();
-			if (option == 4) return;
+			if (option == 4)
+				try {
+					manageFlight(flight, scan, flightDao, conn);
+				} catch (ClassNotFoundException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			System.out.println("Remaining seats:" + flight.getAirplaneId().getAirplaneType().getMaxCapacity());
 			int seats;
 //			if (scan.hasNextInt()) {
@@ -126,12 +132,12 @@ public class Agent {
 			
 		}
 		else if (newOriginAirport.equalsIgnoreCase("Quit") ) {
-			return;
+			addSeat(flight, scan, flightDao, conn);
 		}
 		else {
 			String newOriginCity = scan.next();
 			fTemp.getRouteId().getOriginAirport().setAirportCode(newOriginAirport);
-			fTemp.getRouteId().getOriginAirport().setAirportCode(newOriginCity);
+			fTemp.getRouteId().getOriginAirport().setCity(newOriginCity);
 		}
 
 		System.out.println("Enter new Destination Airport and City or N/A for no change");
@@ -140,7 +146,7 @@ public class Agent {
 			
 		}
 		else if (newDestAirport.equalsIgnoreCase("Quit") ) {
-			return;
+			addSeat(flight, scan, flightDao, conn);
 		}
 		else {
 			String newDestCity = scan.nextLine();
@@ -155,7 +161,7 @@ public class Agent {
 			
 		}
 		else if (newDate.equalsIgnoreCase("Quit") ) {
-			return;
+			addSeat(flight, scan, flightDao, conn);
 		}
 		else {
 				//flight.getDepartureTime().format(DateTimeFormatter.ofPattern("yyyy-mm-dd"));
@@ -174,6 +180,12 @@ public class Agent {
 //		else {
 //			fTemp.getDepartureTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 //		}
+		fTemp.setFlightId(flight.getFlightId());
+		fTemp.getRouteId().setId(2);
+		fTemp.getAirplaneId().setAirplaneId(3);
+		fTemp.setReservedSeats(1);
+		fTemp.setSeatPrice((float) 25);
+		fTemp.getAirplaneId().getAirplaneType().setMaxCapacity(100);;
 		try {
 			flightDao.updateFlight(fTemp);
 			conn.commit();

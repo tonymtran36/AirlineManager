@@ -43,6 +43,7 @@ public class Admin {
 	public void enterOptions(Scanner scan) {
 		promptOptions();
 		if (scan.hasNextInt()) {
+			System.out.println("Enter the number for which CRUD Function you want.");
 			int option =  scan.nextInt();
 			switch(option) {
 			case 1:
@@ -74,76 +75,87 @@ public class Admin {
 	private void crudFlights(Scanner scan) {
 		crudOptions("Flights");
 		if (scan.hasNextInt()) {
+			System.out.println("Enter the number for which CRUD Flight Function you want.");
 			int option = scan.nextInt();
 			switch(option) {
 			case 1:
 				createFlight(scan);
+				return;
 			case 2:
 				try {
 					readFlights();
+					return;
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			case 3:
 				updateFlight(scan);
+				return;
 			case 4:
-				deleteFlight(scan);			
+				deleteFlight(scan);
+				return;
 			}
 		}
 		
 	}
 	
 	private void createFlight(Scanner scan) {
-//		System.out.println("You have chosen to update Flight: " + flight.getFlightId() + " Origin Airport: "
-//				+ flight.getRouteId().getOriginAirport().getAirportCode() + " " +  flight.getRouteId().getOriginAirport().getCity() 
-//				+" Destination Airport: " + flight.getRouteId().getDestAirport().getAirportCode() + " " 
-//				+ flight.getRouteId().getDestAirport().getCity() + "Type quit at any time to cancel operation");
-//		
-//		System.out.println("Enter new Origin Airport and City or N/A for no change");
-//		String newOriginAirport = scan.next();
-//		Flight fTemp = new Flight();
-//		
-//		if (newOriginAirport.equalsIgnoreCase("N/A") ) {
-//			
-//		}
-//		else if (newOriginAirport.equalsIgnoreCase("Quit") ) {
-//			return;
-//		}
-//		else {
-//			String newOriginCity = scan.next();
-//			fTemp.getRouteId().getOriginAirport().setAirportCode(newOriginAirport);
-//			fTemp.getRouteId().getOriginAirport().setAirportCode(newOriginCity);
-//		}
-//
-//		System.out.println("Enter new Destination Airport and City or N/A for no change");
-//		String newDestAirport = scan.next();
-//		if (newDestAirport.equalsIgnoreCase("N/A") ) {
-//			
-//		}
-//		else if (newDestAirport.equalsIgnoreCase("Quit") ) {
-//			return;
-//		}
-//		else {
-//			String newDestCity = scan.nextLine();
-//			fTemp.getRouteId().getDestAirport().setAirportCode(newDestAirport);
-//			fTemp.getRouteId().getDestAirport().setCity(newDestCity);
-//		}
-//		
-//		System.out.println("Enter new Departure Date or N/A for no change (yyyy-mm-dd)");
-//		
-//		String newDate = scan.nextLine();
-//		if (newDate.equalsIgnoreCase("N/A") ) {
-//			
-//		}
-//		else if (newDate.equalsIgnoreCase("Quit") ) {
-//			return;
-//		}
-//		else {
-//			fTemp.setDepartureTime(LocalDate.parse(newDate));
-//		}
+		System.out.println("Enter new Origin Airport followed by the City");
+		
+		Flight nFlight = new Flight();
+
+		if (scan.hasNext()) {
+			String newOriginAirport = scan.next();
+
+			nFlight.getRouteId().getOriginAirport().setAirportCode(newOriginAirport);
+		}
+		
+		if (scan.hasNext()) {
+			String newOriginCity = scan.next();
+			nFlight.getRouteId().getOriginAirport().setAirportCode(newOriginCity);			
+		}
+
+		System.out.println("Enter new Destination Airport followed by the City");
+		if (scan.hasNext()) {
+			String newDestAirport = scan.next();
+
+			nFlight.getRouteId().getDestAirport().setAirportCode(newDestAirport);
+		}
+		
+		if (scan.hasNext()) {
+			String newDestCity = scan.next();
+			nFlight.getRouteId().getOriginAirport().setAirportCode(newDestCity);			
+		}
+		
+		System.out.println("Enter new Departure Date (yyyy-mm-dd)");
+		if (scan.hasNext()) {
+			String newDepartDate = scan.next();
+			nFlight.setDepartureTime(LocalDate.parse(newDepartDate));
+		}
+		
+		Connection conn = null; 
+		try {
+			conn = connUtil.getConnection();
+			FlightDAO flightDao = new FlightDAO(conn);
+			flightDao.addFlight(nFlight);
+			conn.commit(); //this makes the change permanent. 
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	private void readFlights() throws SQLException {
+	private List<Flight> readFlights() throws SQLException {
 		Connection conn = null;
 		List<Flight> flights = new ArrayList<>();
 		try {
@@ -156,14 +168,121 @@ public class Admin {
 		} finally {
 			conn.close();
 		}
+		return flights;
 	}
 	
 	private void updateFlight(Scanner scan) {
-		
+		List<Flight> flights = null;
+		try {
+			flights = readFlights();
+		} catch (SQLException e2) {
+			e2.printStackTrace();
+		}
+		System.out.println("Choose from available flights or type " + (flights.size()+1) +" To quit");
+		Flight fTemp = new Flight();
+		if (scan.hasNextInt()) {
+			int option = scan.nextInt();
+			if ( !(option >= 0 && option <= flights.size())) {
+				return;
+			}
+			
+			System.out.println("Enter new Origin Airport and City");
+			if (scan.hasNext() && scan.hasNext()) {
+				String newOriginAircode = scan.next();
+				String newOriginCity = scan.next();
+				fTemp.getRouteId().getOriginAirport().setAirportCode(newOriginAircode);
+				fTemp.getRouteId().getOriginAirport().setCity(newOriginCity);
+			}
+
+			System.out.println("Enter new Destination Airport and City");
+			if (scan.hasNext() && scan.hasNext()) {
+				String newDestAircode = scan.next();
+				String newDestCity = scan.next();
+				fTemp.getRouteId().getDestAirport().setAirportCode(newDestAircode);
+				fTemp.getRouteId().getDestAirport().setCity(newDestCity);
+			}
+			
+			System.out.println("Enter new Airplane Typing");
+			if (scan.hasNext() && scan.hasNext()) {
+				int newAirplaneId = scan.nextInt();
+				int newMaxCap = scan.nextInt();
+				fTemp.getAirplaneId().getAirplaneType().setAirplaneType(newAirplaneId);
+				fTemp.getAirplaneId().getAirplaneType().setAirplaneType(newMaxCap);
+			}
+			
+			System.out.println("Enter new reserved seats");
+			if (scan.hasNext()) {
+				int newReserved = scan.nextInt();
+				fTemp.setReservedSeats(newReserved);
+			}
+			System.out.println("Enter new seat price");
+			if (scan.hasNext()) {
+				float newPrice = scan.nextFloat();
+				fTemp.setSeatPrice(newPrice);
+			}
+		}
+
+
+		Connection conn = null;
+		try {
+			conn = connUtil.getConnection();
+			FlightDAO flightDao = new FlightDAO(conn);
+			flightDao.updateFlight(fTemp);
+			conn.commit(); // this makes the change permanent.
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private void deleteFlight(Scanner scan) {
+		List<Flight> flights = null;
+		try {
+			flights = readFlights();
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		System.out.println("Choose from available flights or type " + (flights.size()+1) +" To quit");
+		int flightCodeIndex;
+		if (scan.hasNext()) {
+			flightCodeIndex = scan.nextInt();
+		}
+		else {
+			return;
+		}
+		Flight flight = flights.get(flightCodeIndex-1);
 		
+		Connection conn = null; 
+		try {
+			conn = connUtil.getConnection();
+			FlightDAO flightDao = new FlightDAO(conn);
+			flightDao.deletesFlight(flight);
+			conn.commit(); //this makes the change permanent. 
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	//--------------------------------------------------
 	private void crudSeats(Scanner scan) {
@@ -304,14 +423,15 @@ public class Admin {
 		String nAirportCode = null;
 		String nCity = null;
 		Airport nAirport = new Airport();
+		System.out.println("Enter Airport Code and City Name: ");
 		if (scan.hasNext()) {
-			nAirportCode = scan.nextLine();
+			nAirportCode = scan.next();
 		}
 		if (scan.hasNext()) {
-			nCity = scan.nextLine();
+			nCity = scan.next();
 		}
 		nAirport.setAirportCode(nAirportCode);
-		nAirport.setAirportCode(nCity);
+		nAirport.setCity(nCity);
 		
 		Connection conn = null; 
 		try {
@@ -354,17 +474,16 @@ public class Admin {
 	
 	private void updateAirport(Scanner scan) throws SQLException {
 		List<Airport> airports = readAirports();
-		//Airport originalAirport = new Airport();
 		System.out.println("Choose from available airports or type " + (airports.size()+1) +" To quit");
 		Airport airport = new Airport();
 		if (scan.hasNextInt()) {
 			int option = scan.nextInt();
 			if ( option >= 0 && option <= airports.size()) {
 				if (scan.hasNext()) {
-					String newAirportCode = scan.next();
+					String nAirportCode = scan.next();
 					if (scan.hasNext()) {
 						String newCity = scan.next();
-						airport.setAirportCode(newAirportCode);
+						airport.setAirportCode(nAirportCode);
 						airport.setCity(newCity);
 					}
 				}
@@ -406,7 +525,7 @@ public class Admin {
 		else {
 			return;
 		}
-		Airport airport = airports.get(airportCodeIndex);
+		Airport airport = airports.get(airportCodeIndex-1);
 		
 		Connection conn = null; 
 		try {

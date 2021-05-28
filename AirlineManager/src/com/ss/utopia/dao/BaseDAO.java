@@ -22,6 +22,7 @@ public abstract class BaseDAO<T> {
 				count++;
 			}
 		}
+		System.out.println(pstmt);
 		pstmt.executeUpdate();
 	}
 	

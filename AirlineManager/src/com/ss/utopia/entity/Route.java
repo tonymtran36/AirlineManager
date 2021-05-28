@@ -1,7 +1,13 @@
 package com.ss.utopia.entity;
 
-public class Route {
+import java.io.Serializable;
 
+public class Route implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private Airport originAirport = new Airport();
 	private Airport destAirport = new Airport();

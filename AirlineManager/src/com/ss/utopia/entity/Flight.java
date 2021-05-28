@@ -1,16 +1,19 @@
 package com.ss.utopia.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Flight {
+public class Flight implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer flightId;
 	private Route routeId = new Route();
 	private Airplane airplaneId = new Airplane();
-//	private Date departureTime;
-//	private LocalDateTime departureTime;
 	private LocalDate departureTime;
 	private Integer reservedSeats;
-	private Integer seatPrice;
+	private Float seatPrice;
 	
 	public Integer getFlightId() {
 		return flightId;
@@ -42,17 +45,19 @@ public class Flight {
 	public void setReservedSeats(Integer reservedSeats) {
 		this.reservedSeats = reservedSeats;
 	}
-	public Integer getSeatPrice() {
+	public Float getSeatPrice() {
 		return seatPrice;
 	}
-	public void setSeatPrice(Integer seatPrice) {
+	public void setSeatPrice(Float seatPrice) {
 		this.seatPrice = seatPrice;
 	}
 	@Override
 	public String toString() {
-		return "Flight [flightId=" + flightId + ", routeId=" + routeId + ", airplaneId=" + airplaneId
-				+ ", departureTime=" + departureTime + ", reservedSeats=" + reservedSeats + ", seatPrice=" + seatPrice
-				+ "]";
+		return "Flight [flightId=" + flightId + ", Origin Route=" + routeId.getOriginAirport().getAirportCode() + ", " 
+				+ routeId.getOriginAirport().getCity() + " Destination Route=" + routeId.getDestAirport().getAirportCode() + ", " 
+						+ routeId.getDestAirport().getCity() + ", airplaneType=" + airplaneId.getAirplaneType().getAirplaneType() + ", "
+						+ airplaneId.getAirplaneType().getMaxCapacity() + ", departureTime=" + departureTime + ", reservedSeats=" 
+						+ reservedSeats + ", seatPrice=" + seatPrice + "]";
 	}
 	
 	

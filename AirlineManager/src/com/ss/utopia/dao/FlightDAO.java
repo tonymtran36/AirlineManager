@@ -3,6 +3,7 @@ package com.ss.utopia.dao;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 //import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,9 +25,9 @@ public class FlightDAO extends BaseDAO<Flight> {
 	}
 
 	public void updateFlight(Flight flight) throws ClassNotFoundException, SQLException {
-		save("UPDATE flight set route_id = ? airplane_id = ? departure_time = ? reserved_seats = ? seat_price = ? where id = ?",
-				new Object[] {flight.getRouteId(), flight.getAirplaneId(), flight.getDepartureTime(), flight.getDepartureTime(),
-						flight.getReservedSeats(), flight.getSeatPrice()});
+		save("UPDATE flight set route_id = ?, airplane_id = ?, departure_time = ?, reserved_seats = ?, seat_price = ? where id = ?;",
+				new Object[] {flight.getRouteId().getId(), flight.getAirplaneId().getAirplaneId(), flight.getDepartureTime().atStartOfDay(),
+						flight.getReservedSeats(), flight.getSeatPrice(), flight.getFlightId()});
 	}
 	
 	public void deletesFlight(Flight flight) throws ClassNotFoundException, SQLException {
@@ -66,7 +67,7 @@ public class FlightDAO extends BaseDAO<Flight> {
 			flight.setDepartureTime(LocalDate.parse(rs.getString("departure_time"), format));
 			
 			flight.setReservedSeats(rs.getInt("reserved_seats"));
-			flight.setSeatPrice(rs.getInt("seat_price"));
+			flight.setSeatPrice(rs.getFloat("seat_price"));
 			
 			flight.getRouteId().getOriginAirport().setAirportCode(rs.getString("iata_id"));
 			flight.getRouteId().getOriginAirport().setCity(rs.getString("city"));

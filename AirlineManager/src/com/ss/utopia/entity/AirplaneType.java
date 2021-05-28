@@ -1,6 +1,12 @@
 package com.ss.utopia.entity;
 
-public class AirplaneType {
+import java.io.Serializable;
+
+public class AirplaneType implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer airplaneType;
 	private Integer maxCapacity;
 	
